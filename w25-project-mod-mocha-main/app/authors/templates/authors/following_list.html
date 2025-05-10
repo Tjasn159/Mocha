@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ author.display_name }}'s Following List</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            background: #f4f4f9;
+            font-family: 'Poppins', sans-serif;
+            color: #59372b;
+            margin: 0;
+            padding: 10px;
+            text-align: center;
+
+        }
+
+        h1 {
+            color: #59372b;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        #search-bar {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #9f624f;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        #search-bar:focus {
+            border-color: #cca98d;
+            box-shadow: 0 0 10px rgba(156, 121, 103, 0.5);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        li {
+            background: white;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            border-left: 6px solid #9f624f;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }   
+
+        li:hover {
+            transform: translateY(-3px);
+            border-left-color: #cca98d;
+        }
+
+        .name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #59372b;
+        }
+
+        .github, .unfollow-btn {
+            display: block;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            margin: 8px auto;
+        }
+
+        li:hover .github,
+        li:hover .unfollow-btn {
+            opacity: 1;
+        }
+
+        .github {
+            color: #9f624f;
+            cursor: pointer;
+            padding-bottom: 5px;
+            padding-top: 5px;
+        }
+
+        li:hover .github {
+            color: #59372b;
+            text-decoration: underline;
+        }
+
+        .unfollow-btn {
+            background-color: #06BEE1;
+            font-size: 17px;
+            margin-right: 35px;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .unfollow-btn:hover {
+            background-color: #59372b;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ author.display_name }} Follows:</h1>
+
+    <input type="text" id="search-bar" placeholder="Search following..." onkeyup="searchFollowing()">
+
+    {% if approved_requests %}
+        <ul id="following-list">
+            {% for request in approved_requests %}
+                <li class="following-item">
+                    <span class="name">{{ request.followee.display_name }}</span>
+                    <span class="github">{{ request.followee.github }}</span>
+                    {% if user.is_authenticated and user.author.id == author.id %}
+                        <form action="{% url 'authors:edit_follow_request' author_id=request.followee.id follow_request_id=request.id status='denied' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="unfollow-btn">Unfollow</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>This author does not follow anyone</p>
+    {% endif %}
+
+    <script>
+        function searchFollowing() {
+            let input = document.getElementById('search-bar').value.toLowerCase();
+            let followees = document.querySelectorAll('.following-item');
+
+            followees.forEach(followee => {
+                let name = followee.querySelector('.name').textContent.toLowerCase();
+                if (name.includes(input)) {
+                    followee.style.display = 'block';
+                } else {
+                    followee.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block extra_head %}
+    <style>
+        body {
+            background-color: #f1f0ec;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            color: #59372b;
+            margin-top: 40px;
+            font-size: 36px;
+        }
+
+        form {
+            background-color: transparent;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 500px;
+            margin: 40px auto;
+        }
+
+        form label {
+            font-weight: 500;
+            color: #9e7967;
+        }
+
+        form input[type="text"],
+        form input[type="password"],
+        form textarea,
+        form select {
+            width: 100%;
+            padding: 12px 18px;
+            border: 1.5px solid #9e7967;
+            border-radius: 25px;
+            background-color: #fff;
+            font-size: 16px;
+            color: #59372b;
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 10px; 
+
+        }
+
+        form input:focus {
+            outline: none;
+            border-color: #9f624f;
+            box-shadow: 0 0 0 3px rgba(159, 98, 79, 0.2);
+        }
+
+        form button {
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #9f624f;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            align-self: center;
+            width: 50%; 
+            margin-top: 10px; 
+        }
+
+        form button:hover {
+            background-color: #59372b;
+            transform: translateY(-2px);
+        }
+
+        p {
+            text-align: center;
+            color: #9e7967;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <form action="{% url 'authors:login_view' %}" method="post">
+        {% csrf_token %}
+        {% if request.GET.from == "register" %}
+            <h1>Hello There!</h1>
+            <p>Your registration will not go through until approved by administration</p>
+        {% else %}
+            <h1>Welcome Back!</h1>
+        {% endif %}
+        {{ form }}
+        {%if request.GET.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+        {% endif %}
+        <button type="submit">Login</button>
+        
+    </form>
+{% endblock %}

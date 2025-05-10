@@ -1,0 +1,305 @@
+{% extends "index.html" %}
+
+{% block title %}{{ author.display_name }}'s Posts{% endblock %}
+
+{% block content %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .post-list-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            border: 3px solid #2541B2;
+        }
+
+        h1 {
+            color: #03256C;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* Styling for the list of posts */
+        .post-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .post-item {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #2541B2;
+        }
+
+        .post-item h2 {
+            color: #03256C;
+            margin-bottom: 10px;
+        }
+
+        .post-content {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #555;
+        }
+
+        /* Post actions styling (buttons and links) */
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .post-actions a,
+        .post-actions button {
+            display: inline-block;
+            background: #2541B2;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .post-actions a:hover,
+        .post-actions button:hover {
+            background: #1768AC;
+        }
+
+        /* Like count display */
+        .like-count, .like-response {
+            font-size: 14px;
+            color: #2541B2;
+            margin-left: 5px;
+        }
+
+        /* Comment section styling */
+        .post-comments {
+            margin-top: 15px;
+            padding: 10px;
+            background: #eef1f7;
+            border-radius: 6px;
+        }
+
+        .post-comments h3 {
+            margin-bottom: 10px;
+            color: #03256C;
+        }
+
+        /* Comment list */
+        .post-comments ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .post-comments ul li {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Comment like button */
+        .btn-like-comment {
+            background: #1768AC;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-like-comment:hover {
+            background: #03256C;
+        }
+
+        /* Comment like count */
+        .comment-like-count {
+            font-size: 14px;
+            color: #1768AC;
+            margin-left: 5px;
+        }
+
+    </style>
+
+   <!-- CREATE A POST FORM -->
+   {% if posts %}
+   <ul class = "post-list">
+       {% for post in posts %}
+           <li class = "post-item">
+               <h2>{{ post.title}}</h2>
+               <p>{{ post.description}}</p>
+            <div class = "post-content">
+                <p>{{ post.content }}</p>
+            </div>
+
+               <!-- Buttons for the comment and like actions -->
+               <div class = "post-actions">
+                   <!--View Post details-->
+                   <a href = "{% url 'authors:post-detail' post.author.id post.id %}">View Details</a>
+                   <!--Comment on the post button-->
+                   <a href = "{% url 'authors:create-comment-form' post.author.id post.id %}" class = "btn-comment">Comment</a>
+                   <!--Like the post button-->
+                   <button class = "btn-like" data-author-id = "{{ post.author.id }}" data-post-id = "{{ post.id }}">
+                       Like
+                   </button>
+                   <!--Like count display-->
+                   <span class = "like-count" id = "like-count-{{ post.id }}">
+                       {{ post.post_likes.count }} Likes.
+                   </span>
+                   <!--Container to show the like responses and counts-->
+                   <span class = "like-response" id = "like-response-{{ post.id}}"></span>
+               </div>
+
+               <!-- Listing the comments under each post -->
+               <div class = "post-comments">
+                   <h3>Comments</h3>
+                   {% if post.comments.all %}
+                       <ul>
+                           {% for comment in post.comments.all %}
+                               <li>
+                                   <strong>{{ comment.author.display_name }}</strong>:
+                                   {{ comment.comment }}
+                                   <small>({{ comment.published|date:"Y-m-d H:i" }})</small>
+                                   <br>
+                                   <!--Like button for the comment-->
+                                   <button class="btn-like-comment" data-author-id="{{ post.author.id }}" data-post-id="{{ post.id }}" data-comment-id="{{ comment.id }}">
+                                       Like
+                                   </button>
+                                   <!--Like count display for the comment-->
+                                   <span class="comment-like-count" id="comment-like-count-{{ comment.id }}">
+                                       {{ comment.comment_likes.count }} Likes.
+                                   </span>
+                               </li>
+                           {% endfor %}
+                           <!-- 💬 FOREIGN COMMENTS -->
+                            {% for comment in post.foreign_comments_list %}
+                                <li>
+                                    <strong>{{ comment.foreign_author.display_name }}</strong>:
+                                    {{ comment.comment }}
+                                    <small>({{ comment.published|date:"Y-m-d H:i" }})</small>
+                                </li>
+                            {% endfor %}
+                            <!-- 💬 END FOREIGN COMMENTS -->
+                       </ul>
+                   {% else %}
+                       <p>No comments yet.</p>
+                   {% endif %}
+               </div>
+           </li>
+       {% endfor %}
+   </ul>
+    {% else %}
+        <p>No posts made by this author.</p>
+    {% endif %}
+
+    <!-- Javascript to handle the like button functionality-->
+    <script>
+        //Getting all the like buttons and attaching event listerners
+        const likeButton = document.querySelectorAll(".btn-like");
+        likeButton.forEach(button => {
+            button.addEventListener("click", async function() {
+                const authorId = button.getAttribute("data-author-id");
+                const postId = button.getAttribute("data-post-id");
+                const url = `/api/authors/${authorId}/posts/${postId}/like/`;
+
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers : {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"   
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    const postLikeCountElement = document.getElementById(`like-count-${postId}`);
+                    const likeResponseElement = document.getElementById(`like-response-${postId}`);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        if (data.message === "You have already liked this post.") {
+                            likeResponseElement.innerText = "You have already liked this post.";
+                        } else {
+                            postLikeCountElement.innerText = `${data.count} ${data.count === 1 ? "Like" : "Likes"}`;
+                            likeResponseElement.innerText = ''; //Clearing the previous message
+                        }
+                    } else {
+                        likeResponseElement.innerText = "Failed to like the post.";
+                    }
+                     
+                } catch (error) {
+                    console.error("Error liking the post:", error);
+                    document.getElementById(`like-response-${postId}`).innerText = "An error occurred.";
+                }
+            });
+        });  
+        
+        //Getting all the like buttons for the comments and attaching event listerners
+        const commentLikeButton = document.querySelectorAll(".btn-like-comment");
+        commentLikeButton.forEach(button => {
+            button.addEventListener("click", async function() {
+                const authorId = button.getAttribute("data-author-id");
+                const postId = button.getAttribute("data-post-id");
+                const commentId = button.getAttribute("data-comment-id");
+                const url = `/api/authors/${authorId}/posts/${postId}/comments/${commentId}/like/`;
+
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers : {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"   
+                        },
+                        body: JSON.stringify({})
+                    });
+                    
+                    const commetLikeCountElement = document.getElementById(`comment-like-count-${commentId}`);
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        if (data.message === "You have already liked this comment.") {
+                            commetLikeCountElement.innerText = "You have already liked this comment.";
+                        } else {
+                            commetLikeCountElement.innerText = `${data.count} ${data.count === 1 ? "Like" : "Likes"}`;
+                        }
+                    } else {
+                        commetLikeCountElement.innerText = "Failed to like the comment.";
+                    }
+                     
+                } catch (error) {
+                    console.error("Error liking the comment:", error);
+                    document.getElementById(`comment-like-count-${commentId}`).innerText = "An error occurred.";
+                }
+            })
+        });
+
+        //Back button functionality and chekcing to refresh the page after commenting
+        if (sessionStorage.getItem("commented") === "true") {
+            sessionStorage.removeItem("commented"); //Clearing the session storage item
+            window.location.reload();
+        }
+    </script>
+{% endblock %}

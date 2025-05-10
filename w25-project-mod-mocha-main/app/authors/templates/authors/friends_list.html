@@ -1,0 +1,145 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    {{ author.display_name }}'s Friends
+{% endblock %}
+
+{% block extra_head %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #5b3d2f;
+            margin: 0;
+            padding: 10px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #5b3d2f;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        #search-bar {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #a36a4a;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        #search-bar:focus {
+            border-color: #cca98d;
+            box-shadow: 0 0 10px rgba(156, 121, 103, 0.5);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        li {
+            background: white;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            border-left: 6px solid #9f624f;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        li:hover {
+            transform: translateY(-3px);
+            border-left-color: #cca98d;
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #a36a4a;
+        }
+
+        .name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #5b3d2f;
+        }
+
+        .github {
+            display: block;
+            font-size: 17px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            margin: 8px auto;
+        }
+
+        li:hover .github {
+            opacity: 1;
+        }
+
+        .github {
+            color: #a36a4a;
+            cursor: pointer;
+            padding-bottom: 5px;
+            padding-top: 5px;
+        }
+
+        li:hover .github {
+            color: #5b3d2f;
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        function searchFriends() {
+            let input = document.getElementById('search-bar').value.toLowerCase();
+            let friends = document.querySelectorAll('.friend-item');
+
+            friends.forEach(friend => {
+                let name = friend.querySelector('.name').textContent.toLowerCase();
+                if (name.includes(input)) {
+                    friend.style.display = 'block';
+                } else {
+                    friend.style.display = 'none';
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>{{ author.display_name }}'s Friends</h1>
+
+    <input type="text" id="search-bar" placeholder="Search friends..." onkeyup="searchFriends()">
+
+    {% if friends %}
+        <ul id="friends-list">
+            {% for friend in friends %}
+                <li class="friend-item">
+                    <img src="{{ friend.profile_image }}" alt="Profile Image" class="profile-img">
+                    <span class="name">{{ friend.display_name }}</span>
+                    <span class="github">{{ friend.github }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No friends found.</p>
+    {% endif %}
+{% endblock %}

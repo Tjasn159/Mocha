@@ -1,0 +1,202 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    {{ author.display_name }}'s Followers
+{% endblock %}
+{% block extra_head %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #59372b;
+            margin: 0;
+            padding: 10px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #59372b;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        #search-bar {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #9f624f;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+    
+        }
+
+        #search-bar:focus {
+            border-color: #cca98d;
+            box-shadow: 0 0 10px rgba(156, 121, 103, 0.5);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        li {
+            background: white;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            border-left: 6px solid #9f624f;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        li:hover {
+            transform: translateY(-3px);
+            border-left-color: #cca98d;
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #9e7967;
+        }
+
+        .follower-info {
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #59372b;
+        }
+
+        .github, .remove-btn {
+            display: block;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            margin: 8px auto;
+        }
+
+        li:hover .github,
+        li:hover .remove-btn {
+            opacity: 1;
+        }
+
+        .github {
+            color: #9f624f;
+            cursor: pointer;
+            padding-bottom: 5px;
+            padding-top: 5px;
+        }
+
+        li:hover .github {
+            color: #59372b;
+            text-decoration: underline;
+        }
+
+        .remove-btn {
+            background-color: #06BEE1;
+            font-size: 17px;
+            margin-right: 35px;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .remove-btn:hover {
+            background-color: #59372b;
+        }
+
+        .remove-btn-div {
+            margin-left: auto;
+        }
+    </style>
+    <script>
+        function searchFollowers() {
+            let input = document.getElementById('search-bar').value.toLowerCase();
+            let followers = document.querySelectorAll('.follower-item');
+
+            followers.forEach(follower => {
+                let name = follower.querySelector('.name').textContent.toLowerCase();
+                if (name.includes(input)) {
+                    follower.style.display = 'block';
+                } else {
+                    follower.style.display = 'none';
+                }
+            });
+        }
+    </script>
+{% endblock%}
+{% block content %}
+    <h1>{{ author.display_name }}'s Followers</h1>
+
+    <input type="text" id="search-bar" placeholder="Search followers..." onkeyup="searchFollowers()">
+
+    {% if approved_requests %}
+        <ul id="followers-list">
+            {% for request in approved_requests %}
+                <li class="follower-item">
+                    <img src="{{ request.follower.profile_image }}" alt="Profile Image" class="profile-img">
+                    <div class="follower-info">
+                        <p class="name">{{ request.follower.display_name }}</p>
+                        <p class="github">{{ request.follower.github }}</p>
+                    </div>
+                    {% if user.is_authenticated and user.author.id == author.id %}
+                        <div class="remove-btn-div">
+                            <form action="{% url 'authors:edit_follow_request' author_id=author.id follow_request_id=request.id status='denied' %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="remove-btn">Remove Follower</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if foreign_requests %}
+        <ul id="followers-list">
+            {% for request in foreign_requests %}
+            <li class="follower-item">
+                <div class="follower-info">
+                    <p class="name">{{ request.display_name }}</p>
+                </div>
+                {% if user.is_authenticated and user.author.id == author.id %}
+                    <div class="remove-btn-div">
+                        <form action="{% url 'authors:edit_foreign_follow_request' author_id=author.id follow_request_id=request.id status='denied'%}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="remove-btn">Remove Follower</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if not approved_request and not foreign_requests %}
+        <p>No followers found.</p>
+    {% endif %}
+{% endblock %}
+
+   

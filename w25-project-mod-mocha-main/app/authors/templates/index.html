@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+            mocha
+        {% endblock %}
+    </title>
+    <link rel="icon" type="image/png" href="{% static 'authors/images/mocha.png' %}">
+    {% block extra_head %}
+    {% endblock %}
+</head>
+<body>
+    <nav style="text-align: center; height: 40px; line-height: 40px; font-size: 20px;">
+        {% if user.is_authenticated and user.author %}
+            <a href="{% url 'authors:home' %}">Home</a> |
+            <a href="/authors/">Authors</a> | 
+            <a href="{% url 'authors:view_followers' author_id=user.author.id %}" method="get">Followers</a> |
+            <a href="{% url 'authors:view_follow_requests' author_id=user.author.id %}" method="get">Requests</a> |
+            <a href="{% url 'authors:view_friends' author_id=user.author.id %}">Friends</a> |
+            <a href="{% url 'authors:author_profile_id' author_id=user.author.id %}">Profile</a> |
+            <form action="{% url 'authors:logout_view' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" style="padding: 5px 15px; font-size: 16px; color: white; border-radius: 5px;">Logout</button>
+            </form>  
+            <a href="{% url 'authors:create-post-form' user.author.id %}" class="floating-button">+</a>
+        {% else %}
+            <a href="/">Home</a> |
+            <a href="{% url 'authors:register_view' %}">Register</a> | 
+            <a href="{% url 'authors:login_view' %}">Login</a>
+        {% endif %}
+    </nav>
+    <hr>
+    <main>
+        {% block content %}
+        <div class="welcome-container">
+            <span class="welcome-text">Let's Grab a Mocha and Chat!</span>
+        </div>
+
+        <div class="image-container", style="text-align: center; margin-top: 30px;">
+            <img src="{% static 'authors/images/mocha.gif' %}" alt="Mocha Logo" class="styled-image" width="600">
+        </div>
+        {% endblock %}
+    </main>
+</body>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f1f0ec;
+    }
+    nav a {
+        margin: 1px 15px;
+        font-size: 24px;
+        text-decoration: none;
+        color: #59372b;
+    }
+    
+    nav a:hover {
+        text-decoration: underline;
+        color: #9f624f;
+    }
+
+    nav form button {
+        margin-left: 10px;
+        background-color: #9f624f;
+        cursor: pointer;
+    }
+
+    nav form button:hover {
+        background-color: #59372b;
+    }
+
+    .floating-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background-color: #9f624f;
+        color: white;
+        font-size: 30px;
+        font-weight: bold;
+        text-align: center;
+        line-height: 60px;
+        border-radius: 50%;
+        text-decoration: none;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .floating-button:hover {
+        background-color: #59372b;
+        transform: scale(1.1);
+    }
+    
+    @keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+    }
+
+    @keyframes blink {
+    0%, 100% {
+        border-color: #59372b;
+    }
+    50% {
+        border-color: transparent;
+    }
+    }
+
+    @keyframes stop-blinking {
+        to {
+            border-right: none;
+        }
+    }
+
+    .welcome-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .welcome-text {
+        text-align: center;
+        font-size: 45px;
+        font-weight: bold;
+        color: #59372b;
+        margin-top: 20px;
+        white-space: nowrap;
+        overflow: hidden;
+        border-right: 3px solid #59372b;
+        display: inline-block;
+        width: 0;
+        animation: 
+        typing 4s steps(30) 1s forwards,
+        blink 0.75s step-end infinite 1s,
+        stop-blinking 0s forwards;
+        animation-delay: 1s,1s,5s;
+    }
+
+    .image-container {
+        text-align: center;
+        margin-top: 30px;
+    }
+</style>
+</html>

@@ -1,0 +1,204 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    Foreign Authors List Page
+{% endblock %}
+{% block extra_head %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #59372b;
+            margin: 0;
+            padding: 10px;
+            background-color: #f1f0ec; 
+            text-align: center;
+        }
+    
+        h1 {
+            color: #59372b; 
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+    
+        #search-bar {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #9f624f; 
+            border-radius: 30px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+        }
+    
+        #search-bar:focus {
+            border-color: #cca98d; 
+            box-shadow: 0 0 10px rgba(204, 169, 141, 0.5);
+        }
+    
+        ul {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    
+        li {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            border-left: 6px solid #9f624f;
+            text-align: left;
+        }
+    
+        li:hover {
+            transform: translateY(-3px);
+            border-left-color: #9e7967; 
+            padding-bottom: 15px;
+            padding-top: 20px;
+        }
+    
+        .author-info {
+            margin-left: 20px;
+            margin-right: 20px;
+            flex-grow: 1;
+        }
+    
+        .name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #59372b;
+        }
+    
+        a {
+            text-decoration: none;
+        }
+        
+        .approve-btn {
+            display: inline-block;
+            font-size: 17px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            margin-left: 10px;
+            padding: 12px 20px; 
+            background-color: #9f624f;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+            text-align: center;
+        }
+    
+        li:hover .approve-btn {
+            opacity: 1;
+        }
+    
+        .approve-btn {
+            margin-left: auto;
+            margin-right: 60px;
+            padding: 8px 15px; 
+            background-color: #06BEE1; 
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .approve-btn:hover {
+            background-color: #59372b;
+        }
+
+        .pending-request-container{
+            margin-left: auto;
+            margin-right: 40px;
+            font-size: 17px;
+            color:#06BEE1;
+        }
+        img {
+            width: 100px; 
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #9f624f;
+        }
+    </style>
+    <script>
+        function searchAuthors() {
+            let input = document.getElementById('search-bar').value.toLowerCase();
+            let authors = document.querySelectorAll('.author-item');
+
+            authors.forEach(author => {
+                let name = author.querySelector('.name').textContent.toLowerCase();
+                if (name.includes(input)) {
+                    author.style.display = 'block';
+                } else {
+                    author.style.display = 'none';
+                }
+            });
+        }
+    </script>
+{% endblock %}
+{% block content %}
+    <h1>Explore Foreign Authors</h1>
+    <input type="text" id="search-bar" placeholder="Search authors..." onkeyup="searchAuthors()">
+
+        {% if authors %}
+            <ul>
+            {% for author in authors %}
+                        <li class="author-item">
+                            <div class="author-info">
+                                <p class="name">{{ author.displayName }}</p>
+                                <p>{{ author.host }}</p>
+                            </div>  
+                            <div class="approve-btn-div">
+                                <form action="{% url 'authors:send_follow_request' %}"method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="foreign_author_id" value="{{ author.id }}">
+                                    <input type="hidden" name="foreign_author_display_name" value="{{ author.displayName }}">
+                                    <input type="hidden" name="foreign_author_host" value="{{ author.host }}">
+                                    <button type="submit" class="approve-btn">Follow</button>
+                                </form>
+                            </div>                          
+                        </li>
+                        {% if messages %}
+                            <div class="messages">
+                                {% for message in messages %}
+                                    <div class="alert {{ message.tags }}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <script>
+                                // Automatically hide messages after 2 seconds
+                                setTimeout(function() {
+                                    const messages = document.querySelector('.messages');
+                                    if (messages) {
+                                        messages.style.transition = "opacity 0.5s ease-out";
+                                        messages.style.opacity = "0";
+                                        setTimeout(() => messages.remove(), 500); // Remove the element after fading out
+                                    }
+                                }, 2000)
+                            </script>
+                        {% endif %}
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No authors found.</p>
+        {% endif %}
+{% endblock %}

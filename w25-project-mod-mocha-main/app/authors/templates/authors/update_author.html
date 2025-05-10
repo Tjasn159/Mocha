@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Profile</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f1f0ec;
+            color: #59372b;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #9f624f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            position: relative;
+            border-bottom: 3px solid #59372b;
+        }
+
+        .back_button {
+            background: none;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+            position: absolute;
+            left: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .back_button:hover {
+            color: #cca98d;
+        }
+
+        .update-container {
+            max-width: 400px;
+            margin: 40px auto;
+            background: #f1f0ec;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border: 3px solid #9f624f;
+        }
+
+        h1 {
+            color: #59372b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            text-align: left;
+            display: block;
+            color: #9f624f;
+        }
+
+        input[type="text"], 
+        input[type="url"] {
+            padding: 10px;
+            border: 2px solid #9e7967;
+            border-radius: 6px;
+            font-size: 16px;
+            width: 100%;
+            background: #f1f0ec;
+            color: #59372b;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus, 
+        input[type="url"]:focus {
+            border-color: #9f624f;
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background: #59372b;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        input[type="submit"]:hover {
+            background: #9f624f;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <button id="back_button" class="back_button">&#8592;</button>
+        Update Profile
+    </header>
+    <div class="update-container">
+        <h1>Update Profile</h1>
+        <form method="post">
+            {% csrf_token %}
+            <label for="display_name">Name:</label>
+            <input type="text" id="display_name" name="display_name" value="{{ author.display_name }}" required>
+            
+            <label for="github">GitHub:</label>
+            <input type="url" id="github" name="github" value="{{ author.github }}">
+
+            <label for="bio">Bio:</label>
+            <input type="text" id="bio" name="bio" value="{{ author.bio }}">
+            
+            <label for="profile_image">Profile Image:</label>
+            <input type="url" id="profile_image" name="profile_image" value="{{ author.profile_image }}">
+            
+            <input type="submit" value="Update">
+        </form>
+    </div>
+</body>
+<script>
+    document.getElementById("back_button").addEventListener("click", function(){
+        window.location.href = "{% url 'authors:author_profile_id' author_id=user.author.id %}";
+    });
+</script>
+</html>

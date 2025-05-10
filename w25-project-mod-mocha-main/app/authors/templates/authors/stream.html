@@ -1,0 +1,368 @@
+{% extends "index.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #f1f0ec;
+        color: #59372b;
+        margin: 0;
+        padding: 10px;
+    }
+
+    .stream-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 20px;
+        background: #cca98d;
+        border-radius: 18px;
+        box-shadow: 0 4px 16px rgba(89, 55, 43, 0.15);
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 36px;
+        font-weight: 600;
+        color: #59372b;
+        margin-bottom: 20px;
+    }
+
+    #filter-select {
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #9e7967;
+        background-color: #f1f0ec;
+        color: #59372b;
+        font-size: 16px;
+        margin-left: 8px;
+    }
+
+    .post-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .post-item {
+        background: #fff;
+        padding: 20px;
+        margin-bottom: 25px;
+        border-radius: 14px;
+        box-shadow: 0px 6px 12px rgba(89, 55, 43, 0.1);
+        border: 2px solid #cca98d;
+        transition: transform 0.3s ease;
+    }
+
+    .post-item:hover {
+        transform: scale(1.01);
+    }
+
+    .post-item h2 a {
+        color: #59372b;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .post-item h2 a:hover {
+        color: #9f624f;
+        text-decoration: underline;
+    }
+
+    .post-meta, .post-content, .post-description {
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+
+    .post_image img {
+        max-width: 100%;
+        border-radius: 10px;
+        margin-bottom: 5px;
+    }
+
+    .post-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .post-actions a,
+    .post-actions button {
+        background: #9f624f;
+        color: #fff;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .post-actions a:hover,
+    .post-actions button:hover {
+        background: #59372b;
+    }
+
+    .like-count, .like-response,
+    .comment-like-count, .comment-like-response {
+        font-size: 14px;
+        color: #9f624f;
+    }
+
+    .post-comments {
+        background: #cca98d;
+        margin-top: 20px;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .post-comments h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: #59372b;
+    }
+
+    .post-comments ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .post-comments li {
+        background: #fff;
+        border: 1px solid #e0d4c5;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    .author-link {
+        font-weight: bold;
+        color: #9f624f;
+        text-decoration: none;
+    }
+
+    .author-link:hover {
+        color: #59372b;
+        text-decoration: underline;
+    }
+
+    .btn-like-comment {
+        background: #9f624f;
+        color: #fff;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+    .btn-like-comment:hover {
+        background: #59372b;
+    }
+</style>
+
+<div class="stream-container">
+    <h1>Home Feed</h1>
+
+    <label for="filter-select"><strong>Filter:</strong></label>
+    <select id="filter-select" onchange="applyFilter()">
+        <option value="all" {% if filter_type == "all" %}selected{% endif %}>All Posts</option>
+        <option value="friends-only" {% if filter_type == "friends-only" %}selected{% endif %}>Friends-Only</option>
+    </select>
+
+    {% if posts %}
+        <ul class="post-list">
+            {% for post in posts %}
+                <li class="post-item">
+                    {% if not post.is_foreign %}
+                        <h2><a class='post-view-link' href="{% url 'authors:post-detail' post.author.id post.id %}">{{ post.title }}</a></h2>
+                    {% else %}
+                        <h2>{{ post.title }}</h2>
+                    {% endif %}
+
+                    <p class="post-meta">
+                        <strong>By:</strong>
+                        {% if post.foreign_author %}
+                            <span class="author-link">{{ post.foreign_author.display_name }}</span><br>
+                            <em>From remote node: {{ post.foreign_author.host }}</em>
+                        {% elif post.author %}
+                            <a href="{% url 'authors:author_profile_id' post.author.id %}" class="author-link">
+                                {{ post.author.display_name }}
+                            </a>
+                        {% else %}
+                            <span class="author-link">Unknown Author</span>
+                        {% endif %}
+                    </p>
+
+                    <p><strong> Description: </strong>{{ post.description }}</p>
+
+                    {% if post.image %}
+                        <p><strong>Post Image:</strong></p>
+                        <div class="post_image">
+                            <img src="{{ post.image.url }}" alt="Post Image" width="300">
+                        </div>
+                        
+                    
+                    {% endif %}
+
+                    
+                    <div>
+                        <img src="data:image/jpeg;base64,{{ post.content }}" width="300" onerror="this.style.display='none';">
+                    </div>
+
+                    {% if post.visibility == "PRIVATE" %}
+                        <p class="post-meta"><strong>Friends-Only</strong></p>
+                    {% elif post.visibility == "UNLISTED" %}
+                        <p class="post-meta"> Unlisted</p>
+                    {% else %}
+                        <p class="post-meta"> Public</p>
+                    {% endif %}
+
+                    <div class="post-actions">
+                        {% if not post.is_foreign %}
+                            <!-- ✅ Local post: enable comment button -->
+                            <a href="{% url 'authors:create-comment-form' post.author.id post.id %}" class="btn-comment">Comment</a>
+                        {% else %}
+                            <!-- ✅ Foreign post: use foreign comment form -->
+                            <a href="{% url 'authors:foreign-post-comment-form' post.id %}" class="btn-comment">Comment</a>
+                        {% endif %}
+                    
+                        <button class="btn-like" data-author-id="{{ post.author.id }}" data-post-id="{{ post.id }}">
+                            Like
+                        </button>
+                        <span class="like-count" id="like-count-{{ post.id }}">
+                            {{ post.post_likes.count }} Likes.
+                        </span>
+                        <span class="like-response" id="like-response-{{ post.id }}"></span>
+                    </div>
+                    
+
+                    <!-- Comments -->
+                    <div class="post-comments">
+                        <h3>Comments</h3>
+                        {% if post.comments.all or post.foreign_comments.all %}
+                            <ul>
+                                {% for comment in post.comments.all %}
+                                    {% if post.visibility != "FRIENDS" or user.author == comment.author or user.author in friends %}
+                                        <li>
+                                            <strong>{{ comment.author.display_name }}</strong>: {{ comment.comment }}
+                                            <small>({{ comment.published|date:"Y-m-d H:i" }})</small>
+                                            <button class="btn-like-comment"
+                                                    data-author-id="{{ post.author.id }}"
+                                                    data-post-id="{{ post.id }}"
+                                                    data-comment-id="{{ comment.id }}">
+                                                Like
+                                            </button>
+                                            <span class="comment-like-count" id="comment-like-count-{{ comment.id }}">
+                                                {{ comment.comment_likes.count }} Likes.
+                                            </span>
+                                            <span class="comment-like-response" id="comment-like-response-{{ comment.id }}"></span>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <!-- 👇 Added for foreign comments -->
+                                {% for comment in post.foreign_comments.all %}
+                                    <li>
+                                        <strong>{{ comment.foreign_author.display_name }}</strong>: {{ comment.comment }}
+                                        <small>({{ comment.published|date:"Y-m-d H:i" }})</small>
+                                        <!-- No like button for foreign comments -->
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No comments yet.</p>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No posts available.</p>
+    {% endif %}
+</div>
+
+<script>
+    document.querySelectorAll(".btn-like").forEach(button => {
+        button.addEventListener("click", async function() {
+            const authorId = button.getAttribute("data-author-id");
+            const postId = button.getAttribute("data-post-id");
+            const url = `/api/authors/${authorId}/posts/${postId}/like/`;
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({})
+                });
+
+                const postLikeCountElement = document.getElementById(`like-count-${postId}`);
+                const likeResponseElement = document.getElementById(`like-response-${postId}`);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.message === "You have already liked this post.") {
+                        likeResponseElement.innerText = "You have already liked this post.";
+                    } else {
+                        postLikeCountElement.innerText = `${data.count} ${data.count === 1 ? "Like" : "Likes"}.`;
+                        likeResponseElement.innerText = "";
+                    }
+                } else {
+                    likeResponseElement.innerText = "Failed to like the post.";
+                }
+            } catch (error) {
+                console.error("Error liking the post:", error);
+            }
+        });
+    });
+
+    document.querySelectorAll(".btn-like-comment").forEach(button => {
+        button.addEventListener("click", async function() {
+            const authorId = button.getAttribute("data-author-id");
+            const postId = button.getAttribute("data-post-id");
+            const commentId = button.getAttribute("data-comment-id");
+            const url = `/api/authors/${authorId}/posts/${postId}/comments/${commentId}/like/`;
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({})
+                });
+
+                const countEl = document.getElementById(`comment-like-count-${commentId}`);
+                const respEl = document.getElementById(`comment-like-response-${commentId}`);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.message === "You have already liked this comment.") {
+                        respEl.innerText = "You have already liked this comment.";
+                    } else {
+                        countEl.innerText = `${data.count} ${data.count === 1 ? "Like" : "Likes"}.`;
+                        respEl.innerText = "";
+                    }
+                } else {
+                    respEl.innerText = "Failed to like the comment.";
+                }
+            } catch (error) {
+                console.error("Error liking the comment:", error);
+            }
+        });
+    });
+
+    function applyFilter() {
+        const filter = document.getElementById("filter-select").value;
+        window.location.href = `/authors/stream/?filter=${filter}`;
+    }
+</script>
+{% endblock %}

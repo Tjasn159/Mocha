@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ author.display_name }}'s Profile</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            color:#59372b;
+        }
+
+        header {
+            background: #9f624f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            position: relative;
+            border-bottom: 3px solid #59372b;
+        }
+
+        .back_button {
+            background: none;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+            position: absolute;
+            left: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .settings-icon {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            padding: 3px;
+        }
+
+        .settings-icon a {
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: 0.3s;
+            background: #59372b;
+            color: white;
+        }
+
+        .settings-icon a:hover {
+            background: #9e7967;
+        }
+        .profile-content {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        img {
+            width: 250px; 
+            height: 250px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #9e7967;
+        }
+
+        .profile-details {
+            font-size: 18px;
+        }
+
+        .profile-details a {
+            color: #9e7967;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .profile-details a:hover {
+            text-decoration: underline;
+        }
+
+        .stats {
+            margin-top: 20px;
+            display: flex;
+            gap: 50px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .posts-section {
+            margin-top: 25px;
+        }
+
+        .post-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .post-item {
+            background: #f1f0ec;
+            border-left: 5px solid #59372b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-item:hover{
+            border-left: 5px solid #9e7967;
+        }
+
+        .post-item h2 {
+            color: #59372b;
+            margin-bottom: 10px;
+        }
+
+        .post_image {
+            text-align: left;
+        }
+
+        .post_image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 1px;
+        }
+        
+        .post-content {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #9f624f;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+    
+        .post-actions a,
+        .post-actions button {
+            display: inline-block;
+            background: #9f624f;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .post-actions a:hover,
+        .post-actions button:hover {
+            background: #59372b;
+        }
+
+        .like-count, .like-response {
+            font-size: 14px;
+            color: #9e7967;
+            margin-left: 5px;
+        }
+
+        .post-comments {
+            margin-top: 15px;
+            padding: 10px;
+            background: #cca98d;
+            border-radius: 6px;
+        }
+
+        .post-comments h3 {
+            margin-bottom: 10px;
+            color: #59372b;
+        }
+
+        .post-comments ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .post-comments ul li {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-like-comment {
+            background: #9f624f;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-like-comment:hover {
+            background: #59372b;
+        }
+
+        .comment-like-count {
+            font-size: 14px;
+            color: #9e7967;
+            margin-left: 5px;
+        }
+
+        .hover-link {
+            text-decoration: none;
+            color: #9e7967;
+            transition: color 0.3s ease;
+        }
+
+        .hover-link:hover {
+            color: #9f624f;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .non-link {
+            color: #9e7967;
+            font-weight: bold;
+        }
+        .non-link:hover{
+            color: #9f624f;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .follow-button {
+            margin-top: 12px;
+            margin-left: 100px;
+            background: #06BEE1;
+            color: white;
+            padding: 10px 16px;
+            font-size: 20px;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .follow-button:hover {
+            background: #59372b;
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <button id="back_button" class="back_button">&#8592;</button>
+        {{ author.display_name }}'s Profile
+        {% if user.is_authenticated and user.author.id == author.id %}
+            <div class="settings-icon">
+                <a href="{% url 'authors:author_update' author.id %}">⚙ Edit Profile</a>
+            </div>
+        {% endif %}
+    </header>
+
+    <div class="profile-content">
+        <div class="profile-info">
+            <img src="{{ author.profile_image }}" alt="Profile Image">
+            <div class="profile-details">
+                <p><strong>Name:</strong> {{ author.display_name }}</p>
+                <p><strong>GitHub:</strong> <a href="{{ author.github }}" target="_blank">{{ author.github }}</a></p>
+                <p><strong>Bio:</strong> {{ author.bio }} </p>
+            </div>
+        </div>
+
+        <div class="stats">
+        <p>
+            <strong>
+                <a href="{% url 'authors:view_followers' author_id=author.id %}" class="hover-link">Followers:</a>
+            </strong> {{ followers }}
+        </p>
+        <p>
+            <strong>
+                <a href="{% url 'authors:view_followees' author_id=author.id %}" class="hover-link">Following:</a>
+            </strong> {{ followees }}
+        </p>
+        <p><strong class="non-link">Posts:</strong> {{ post_count }}</p>
+        {% if user.is_authenticated and user.author.id != author.id %}
+            <div class="follow-button-container">
+                {% if not is_following %}
+                    <button id="follow-button" class="follow-button" data-author-id="{{ author.id }}">Follow</button>
+                {% else %}
+                    <button id="follow-button" class="follow-button following" disabled>Following</button>
+                {% endif %}
+            </div>
+        {% endif %}
+        </div>
+
+        <!-- Posts Section -->
+        <div class="posts-section">
+            <h2>Posts</h2>
+            {% for post in posts %}
+            <div class = "post-item">
+                <h2>{{ post.title}}</h2>
+
+                {% if post.image %}
+                    <p><strong>Post Image:</strong></p>
+                    <div class="post_image">
+                        <img src="{{ post.image.url }}" alt="Post Image" width="300">
+                    </div>
+                {% else %}
+                    <p>No image uploaded.</p>
+                {% endif %}
+
+                <p><strong> Description: </strong>{{ post.description}}</p>
+                <div class = "post-content">
+                    <p><strong>Content: </strong>{{ post.content}}</p>
+                </div>
+ 
+                <!-- Buttons for the comment and like actions -->
+                <div class = "post-actions">
+                    <!--View Post details-->
+                    {% if user.is_authenticated and user.author.id == post.author.id %}
+                        <a href = "{% url 'authors:post-detail' post.author.id post.id %}">View Details</a>
+                    {% endif %}
+                    <!--Comment on the post button-->
+                    <a href = "{% url 'authors:create-comment-form' post.author.id post.id %}" class = "btn-comment">Comment</a>
+                    <!--Like the post button-->
+                    <button class = "btn-like" data-author-id = "{{ post.author.id }}" data-post-id = "{{ post.id }}">
+                        Like
+                    </button>
+                    <!--Like count display-->
+                    <span class = "like-count" id = "like-count-{{ post.id }}">
+                        {{ post.post_likes.count }} Likes.
+                    </span>
+                    <!--Container to show the like responses and counts-->
+                    <span class = "like-response" id = "like-response-{{ post.id}}"></span>
+                </div>
+ 
+                <!-- Listing the comments under each post -->
+                <div class = "post-comments">
+                    <h3>Comments</h3>
+                    {% if post.comments.all %}
+                        <ul>
+                            {% for comment in post.comments.all %}
+                                <li>
+                                    <strong>{{ comment.author.display_name }}</strong>:
+                                    {{ comment.comment }}
+                                    <small>({{ comment.published|date:"Y-m-d H:i" }})</small>
+                                    <br>
+                                    <!--Like button for the comment-->
+                                    <button class="btn-like-comment" data-author-id="{{ post.author.id }}" data-post-id="{{ post.id }}" data-comment-id="{{ comment.id }}">
+                                        Like
+                                    </button>
+                                    <!--Like count display for the comment-->
+                                    <span class="comment-like-count" id="comment-like-count-{{ comment.id }}">
+                                        {{ comment.comment_likes.count }} Likes.
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No comments yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+                <p>No posts yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+<script>
+    document.getElementById("back_button").addEventListener("click", function(){
+        window.location.href = "{% url 'authors:home' %}";
+    });
+
+    const likeButton = document.querySelectorAll(".btn-like");
+        likeButton.forEach(button => {
+            button.addEventListener("click", async function() {
+                const authorId = button.getAttribute("data-author-id");
+                const postId = button.getAttribute("data-post-id");
+                const url = `/api/authors/${authorId}/posts/${postId}/like/`;
+
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers : {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"   
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    const postLikeCountElement = document.getElementById(`like-count-${postId}`);
+                    const likeResponseElement = document.getElementById(`like-response-${postId}`);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        if (data.message === "You have already liked this post.") {
+                            likeResponseElement.innerText = "You have already liked this post.";
+                        } else {
+                            postLikeCountElement.innerText = `${data.count} ${data.count === 1 ? "Like" : "Likes"}`;
+                            likeResponseElement.innerText = ''; //Clearing the previous message
+                        }
+                    } else {
+                        likeResponseElement.innerText = "Failed to like the post.";
+                    }
+                     
+                } catch (error) {
+                    console.error("Error liking the post:", error);
+                    document.getElementById(`like-response-${postId}`).innerText = "An error occurred.";
+                }
+            });
+        });  
+        
+        const commentLikeButton = document.querySelectorAll(".btn-like-comment");
+        commentLikeButton.forEach(button => {
+            button.addEventListener("click", async function() {
+                const authorId = button.getAttribute("data-author-id");
+                const postId = button.getAttribute("data-post-id");
+                const commentId = button.getAttribute("data-comment-id");
+                const url = `/api/authors/${authorId}/posts/${postId}/comments/${commentId}/like/`;
+
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers : {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"   
+                        },
+                        body: JSON.stringify({})
+                    });
+                    
+                    const commetLikeCountElement = document.getElementById(`comment-like-count-${commentId}`);
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        if (data.message === "You have already liked this comment.") {
+                            commetLikeCountElement.innerText = "You have already liked this comment.";
+                        } else {
+                            commetLikeCountElement.innerText = `${data.count} ${data.count === 1 ? "Like" : "Likes"}`;
+                        }
+                    } else {
+                        commetLikeCountElement.innerText = "Failed to like the comment.";
+                    }
+                     
+                } catch (error) {
+                    console.error("Error liking the comment:", error);
+                    document.getElementById(`comment-like-count-${commentId}`).innerText = "An error occurred.";
+                }
+            })
+        });
+
+        if (sessionStorage.getItem("commented") === "true") {
+            sessionStorage.removeItem("commented"); 
+            window.location.reload();
+        }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const followButton = document.getElementById("follow-button");
+
+        if (followButton) {
+            followButton.addEventListener("click", async function() {
+                const authorId = followButton.getAttribute("data-author-id");
+                const url = `/api/authors/${authorId}/follow/`;
+
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers : {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"   
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    const data = await response.json();
+                    if (response.ok) {
+                        followButton.innerText = "Request Sent";
+                        followButton.disabled = true;
+                        followButton.classList.add("requested");
+                    }
+                } catch (error) {
+                    console.error("Error following the author:", error);
+                }
+            });
+        }
+    });
+</script>
+</html>

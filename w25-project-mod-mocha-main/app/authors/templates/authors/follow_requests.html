@@ -1,0 +1,136 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    {{ author.display_name }}'s Follow Requests
+{% endblock %}
+{% block extra_head %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f1ece6;
+            color: #5b3d2f;
+            margin: 0;
+            padding: 10px;
+        }
+
+        h1 {
+            color: #5b3d2f;
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        li {
+            background: white; 
+            padding: 20px;
+            margin-bottom: 18px;
+            border-radius: 15px;
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+            border-left: 8px solid #a36a4a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 550px;
+            font-size: 18px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        li:hover {
+            border-left-color: #c89f85;
+            transform: translateY(-3px);
+            box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .approve-btn, .deny-btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .approve-btn {
+            background: #28A745;
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background: #218838;
+        }
+
+        .deny-btn {
+            background: #DC3545;
+            color: white;
+        }
+
+        .deny-btn:hover {
+            background: #C82333;
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>{{ author.display_name }}'s Follow Requests</h1>
+    
+    {% if pending_requests %}
+        <ul>
+            {% for follow_request in pending_requests %}
+                <li>
+                    {{ follow_request.follower.display_name }} wants to follow you
+                    <div class="buttons">
+                        <form action="{% url 'authors:edit_follow_request' author_id=author.id follow_request_id=follow_request.id status='approved'%}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="approve-btn">Approve</button>
+                        </form>
+                        <form action="{% url 'authors:edit_follow_request' author_id=author.id follow_request_id=follow_request.id status='denied'%}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="deny-btn">Deny</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {%if foreign_requests %}
+        <ul>
+            {% for follow_request in foreign_requests %}
+                <li>
+                    {{ follow_request.display_name }} wants to follow you
+                    <div class="buttons">
+                        <form action="{% url 'authors:edit_foreign_follow_request' author_id=author.id follow_request_id=follow_request.id status='approved'%}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="approve-btn">Approve</button>
+                        </form>
+                        <form action="{% url 'authors:edit_foreign_follow_request' author_id=author.id follow_request_id=follow_request.id status='denied'%}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="deny-btn">Deny</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if not pending_requests and not foreign_requests %}
+        <p style="text-align: center;">No requests found</p>
+    {% endif %}
+{% endblock %}

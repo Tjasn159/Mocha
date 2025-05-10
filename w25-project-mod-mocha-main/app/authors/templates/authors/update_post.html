@@ -1,0 +1,132 @@
+{% extends "index.html" %}
+
+{% block title %}Edit Post{% endblock %}
+
+{% block content %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f1f0ec;
+            color: #59372b;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .edit-post-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            border: 3px solid #9f624f;
+        }
+
+        h1 {
+            color: #59372b;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #9f624f;
+        }
+
+        input[type="text"], textarea, select, input[type="file"]{
+            padding: 12px;
+            border: 2px solid #cca98d;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            border-color: #9f624f;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 150px;
+        }
+
+        .update_button button {
+            background: #59372b;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .update_button button:hover {
+            background: #9f624f;
+        }
+
+        .image-bordered {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #cca98d;
+            border-radius: 10px;
+            margin-top: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+    </style>
+
+    <div class="edit-post-container">
+        <h1>Edit Post</h1>
+
+        <form method="POST" enctype="multipart/form-data"> <!--  Allow file uploads -->
+            {% csrf_token %}
+
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" value="{{ post.title }}" required>
+
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description" value="{{ post.description }}">
+
+            <label for="content">Content:</label>
+            <textarea id="content" name="content" required>{{ post.content }}</textarea>
+
+            <label for="content_type">Content Type:</label>
+            <select id="content_type" name="content_type">
+                <option value="text/plain" {% if post.content_type == "text/plain" %}selected{% endif %}>Plain Text</option>
+                <option value="text/markdown" {% if post.content_type == "text/markdown" %}selected{% endif %}>Markdown</option>
+            </select>
+
+            <label for="visibility">Visibility:</label>
+            <select id="visibility" name="visibility">
+                <option value="PUBLIC" {% if post.visibility == "PUBLIC" %}selected{% endif %}>Public</option>
+                <option value="PRIVATE" {% if post.visibility == "PRIVATE" %}selected{% endif %}>Private</option>
+            </select>
+
+            <!--  Show existing image if available -->
+            {% if post.image %}
+                <label for="current_image">Current Image:</label>
+                <img src="{{ post.image.url }}" alt="Post Image" class="image-bordered">
+            {% endif %}
+
+            <!--  Allow uploading a new image -->
+            <label for="image">Upload New Image (Optional):</label>
+            <input type="file" id="image" name="image">
+
+            <div class="update_button">
+                <button type="submit">Update Post</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
