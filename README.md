@@ -8,5 +8,11 @@ A minimalist, peer-to-peer blogging and social networking platform inspired by t
 
 - Content Aggregation: Authors can follow others across different nodes, pulling their shared content into a local feed.
 
+## Resources
+- Promtional Video
+<a href="https://www.youtube.com/watch?v=viOFeeVYwWs">
+  <img src="https://github.com/Tjasn159/Mocha/blob/main/w25-project-mod-mocha-main/app/static/authors/images/Screenshot%20(59).png" width="500">
+</a>
 
-[![Watch the video](https://github.com/Tjasn159/Mocha/blob/main/w25-project-mod-mocha-main/app/static/authors/images/Screenshot%20(59).png)](https://www.youtube.com/watch?v=viOFeeVYwWs)
+
+
