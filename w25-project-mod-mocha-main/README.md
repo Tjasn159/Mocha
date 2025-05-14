@@ -1,11 +1,9 @@
-| **Name**     | **CCID** |
-|--------------|----------|
-|Viral Bhavsar | viralkum |
-|Khushi Lad | klad|
-|Dhanshri Patel | dhanshri|
-|Dhairya Prajapati | dprajapa|
-|Vivaan Vir | vivaan|
-|Tejas Narayan | tnarayan|
+| **Name**     |
+|--------------|
+|Viral Bhavsar |
+|Khushi Lad |
+|Dhanshri Patel |
+|Dhairya Prajapati |
+|Vivaan Vir | 
+|Tejas Narayan |
 
-
-We as a team declare the use of ChatGPT.
